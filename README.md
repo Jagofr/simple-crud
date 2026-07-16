@@ -7,10 +7,20 @@ This app serves as a baseline on how I develop CRUD applications, with the inten
 Currently, the app stores the info until the page is refreshed.
 
 TODO: 
-- [ ] Implement Persistence
+- [x] ~~Implement Data Deletion (Delete)~~
+  - [x] ~~Ensure data updated in local array~~
+- [x] ~~Implement Data Editing (Update)~~
+  - [x] ~~Update interface with edit fields~~
+  - [x] ~~Ensure data updated in local array~~
+- [x] ~~Implement Data Addition (Create)~~
+  - [x] ~~Reset input fields~~
+  - [x] ~~Update data list with new data~~
+  - [x] ~~Ensure data updated in local array~~
+- [ ] Implement Data Persistence (Read)
   - [ ] Cookie Persistence
   - [ ] IndexedDB Persistence
   - [ ] LocalStorage Persistence
+  - [ ] Ensure data updated in local array
 - [ ] Improve UI
   - [ ] Add Labels to Input
   - [ ] Fix Positioning of Elements
