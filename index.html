@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple CRUD App</title>
+</head>
+<body>
+    <main>
+        <form>
+            <label for="title" id="title-field-label">Title</label>
+            <input type="text" name="title" id="title-field" title="Title">
+            <label for="info" id="info-field-label">Info</label>
+            <input type="text" name="info" id="info-field" title="Info">
+            <input type="submit" value="Add">
+        </form>
+        
+        <button onclick="showDebug();">DEBUG: SHOW ALLDATA ARRAY</button>
+
+        <section id="data-list-container">
+            <article data-item-id="0">
+                <h4>Dummy Test</h4>
+                <p>Test information with a bit of lorem ipsum. Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                <div>
+                    <button onclick="editData();">Edit</button>
+                    <button onclick="deleteData();">Delete</button>
+                </div>
+            </article>            
+        </section>
+    </main>
+    <script>
+        const formEle = document.querySelector("form");
+        const dataContainerEle = document.querySelector("#data-list-container");
+
+        var allData = []
+
+        formEle.addEventListener("submit", (evt) => {
+            evt.preventDefault();
+            let newTitle = formEle.querySelector("#title-field").value,
+                newInfo = formEle.querySelector("#info-field").value,
+                newId = allData.length,
+                newArticle = document.createElement("article"),
+                newTitleEle = document.createElement("h4"),
+                newInfoEle = document.createElement("p"),
+                newButtonsContainer = document.createElement("div"),
+                newEditButton = document.createElement("button"),
+                newDeleteButton = document.createElement("button");
+
+            newTitleEle.textContent = newTitle;
+            newInfoEle.textContent = newInfo;
+            newEditButton.textContent = "Edit";
+            newDeleteButton.textContent = "Delete";
+
+            newEditButton.addEventListener("click", editData);
+            newDeleteButton.addEventListener("click", deleteData);
+
+            newButtonsContainer.appendChild(newEditButton);
+            newButtonsContainer.appendChild(newDeleteButton);
+            newArticle.appendChild(newTitleEle);
+            newArticle.appendChild(newInfoEle);
+            newArticle.appendChild(newButtonsContainer);
+            newArticle.setAttribute("data-item-id", newId);
+            
+            console.log(newArticle);
+
+            document.querySelector("#data-list-container").appendChild(newArticle);
+
+            let newData = {
+                id: newId,
+                title: newTitle,
+                info: newInfo
+            };
+
+            allData.push(newData);
+
+            formEle.reset();
+        });
+        fetchFromList();
+
+        function showDebug() {
+            console.log(allData);
+        }
+
+        /*
+        function addData(evt) {
+            evt.preventDefault();
+            let newTitle = formEle.querySelector("#title-field").value,
+                newInfo = formEle.querySelector("#info-field").value,
+                newId = allData.length,
+                newArticle = document.createElement("article"),
+                newTitleEle = document.createElement("h4"),
+                newInfoEle = document.createElement("p"),
+                newButtonsContainer = document.createElement("div"),
+                newEditButton = document.createElement("button"),
+                newDeleteButton = document.createElement("button");
+
+            newTitleEle.textContent = newTitle;
+            newInfoEle.textContent = newInfo;
+            newEditButton.textContent = "Edit";
+            newDeleteButton.textContent = "Delete";
+
+            newEditButton.onclick = editData();
+            newDeleteButton.onclick = deleteData();
+
+            newButtonsContainer.appendChild(newEditButton);
+            newButtonsContainer.appendChild(newDeleteButton);
+            newArticle.appendChild(newTitleEle);
+            newArticle.appendChild(newInfoEle);
+            newArticle.appendChild(newButtonsContainer);
+            newArticle.setAttribute("data-item-id", newId);
+            
+            console.log(newArticle);
+
+            document.querySelector("#data-list-container").appendChild(newArticle);
+
+            let newData = {
+                id: newId,
+                title: newTitle,
+                info: newInfo
+            };
+
+            allData.push(newData);
+
+            formEle.reset();
+        }
+        */
+
+        function editData() {
+            let targetData = event.target.parentElement.parentElement,
+                currentButtonsContainer = targetData.querySelector('div').cloneNode(true),
+                currentTitleEle = targetData.querySelector('h4').cloneNode(true),
+                currentInfoEle = targetData.querySelector('p').cloneNode(true),
+                currentId = targetData.getAttribute('data-item-id'),
+
+                editTitleField = document.createElement("input"),
+                editInfoField = document.createElement("textarea"),
+                editButtonsContainer = document.createElement("div"),
+                editSubmitButton = document.createElement("button"),
+                editCancelButton = document.createElement("button");
+            
+            editTitleField.setAttribute("type", "text");
+            editTitleField.value = currentTitleEle.textContent;             
+            editInfoField.value = currentInfoEle.textContent;
+            editSubmitButton.textContent = "Save";
+            editCancelButton.textContent = "Cancel";
+
+            editSubmitButton.onclick = () => {
+                let newData = {
+                    id: currentId,
+                    title: editTitleField.value,
+                    info: editInfoField.value
+                };
+                currentTitleEle.textContent = editTitleField.value;
+                currentInfoEle.textContent = editInfoField.value;
+                targetData.querySelector('input').replaceWith(currentTitleEle);
+                targetData.querySelector('textarea').replaceWith(currentInfoEle);
+                targetData.querySelector('div').replaceWith(currentButtonsContainer);
+                currentButtonsContainer.children[0].addEventListener('click', editData);
+                currentButtonsContainer.children[1].addEventListener('click',deleteData);
+                allData.forEach((item, index) => {
+                    if (item.id == currentId) {
+                        allData.splice(index, 1, newData);
+                    }
+                });
+            };
+            editCancelButton.onclick = () => {
+                targetData.querySelector('input').replaceWith(currentTitleEle);
+                targetData.querySelector('textarea').replaceWith(currentInfoEle);
+                targetData.querySelector('div').replaceWith(currentButtonsContainer);
+                currentButtonsContainer.children[0].addEventListener('click', editData);
+                currentButtonsContainer.children[1].addEventListener('click',deleteData);
+            };
+
+            editButtonsContainer.appendChild(editSubmitButton);
+            editButtonsContainer.appendChild(editCancelButton);
+            
+            targetData.querySelector('h4').replaceWith(editTitleField);
+            targetData.querySelector('p').replaceWith(editInfoField);
+            targetData.querySelector('div').replaceWith(editButtonsContainer);
+        }
+
+        function deleteData() {
+            console.log(event.target);
+            let id = event.target.parentElement.parentElement.getAttribute('data-item-id');
+            allData.forEach((item, index) => {
+                if (item.id == id) {
+                    allData.splice(index, 1);
+                }
+            });
+            event.target.parentElement.parentElement.remove();
+        }
+
+        function fetchFromList() {
+            let existingData = dataContainerEle.querySelectorAll("article");
+            existingData.forEach((targetData) => {
+                let targetId = targetData.getAttribute('data-item-id');
+                let targetTitle = targetData.querySelector('h4').textContent;
+                let targetInfo = targetData.querySelector('p').textContent;
+
+                let data = {
+                    id: targetId,
+                    title: targetTitle,
+                    info: targetInfo
+                };
+
+                allData.push(data);
+            });
+
+            console.log(allData);
+            console.log(existingData);
+        }
+        
+    </script>
+</body>
+</html>
